@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRI Premier Event — Elite Scouting Dashboard</title>
+
+    <style>
+/* White theme, sharp corners, no glass */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    background: #f5f5f5;
+    color: #1a1a1a;
+    min-height: 100vh;
+    line-height: 1.5;
+}
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #eee; }
+::-webkit-scrollbar-thumb { background: #ccc; }
+::-webkit-scrollbar-thumb:hover { background: #aaa; }
+
+::selection { background: rgba(220, 38, 38, 0.15); }
+
+.app { position: relative; z-index: 1; min-height: 100vh; }
+.container { max-width: 1480px; margin: 0 auto; padding: 0 20px; }
+
+/* NAV */
+.navbar {
+    position: sticky; top: 0; z-index: 100;
+    padding: 10px 0;
+    background: #fff;
+    border-bottom: 1px solid #ddd;
+}
+
+.navbar-inner {
+    display: flex; align-items: center; justify-content: space-between;
+}
+
+.nav-brand {
+    display: flex; align-items: center; gap: 10px; text-decoration: none;
+}
+
+.nav-logo {
+    width: 32px; height: 32px; border-radius: 3px;
+    background: #dc2626; display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 800; color: #fff;
+}
+
+.nav-title {
+    font-size: 1rem; font-weight: 700; color: #111; letter-spacing: -0.01em;
+}
+
+.nav-subtitle {
+    font-size: 0.7rem; color: #888; font-weight: 400;
+}
+
+.nav-actions { display: flex; align-items: center; gap: 6px; }
+
+.nav-pill {
+    display: flex; align-items: center; gap: 5px;
+    padding: 5px 12px; border-radius: 3px;
+    background: #fff; border: 1px solid #ddd;
+    color: #555; font-size: 0.75rem; font-weight: 500;
+    cursor: pointer; white-space: nowrap;
+}
+.nav-pill:hover { background: #f0f0f0; color: #111; }
+.nav-pill.active { background: #dc2626; border-color: #dc2626; color: #fff; }
+
+.nav-pill .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #10b981; animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; } 50% { opacity: 0.4; }
+}
+
+/* HERO */
+.hero { padding: 32px 0 20px; text-align: center; }
+
+.hero-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 3px 12px; border-radius: 3px;
+    background: rgba(220, 38, 38, 0.08); border: 1px solid rgba(220, 38, 38, 0.2);
+    color: #dc2626; font-size: 0.7rem; font-weight: 600;
+    letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 12px;
+}
+
+.hero h1 {
+    font-size: 2.2rem; font-weight: 800; color: #111;
+    letter-spacing: -0.02em; margin-bottom: 8px;
+}
+
+.hero-sub {
+    font-size: 0.95rem; color: #666; max-width: 560px; margin: 0 auto 20px;
+}
+
+.hero-meta {
+    display: flex; justify-content: center; gap: 28px; flex-wrap: wrap;
+}
+
+.hero-meta-item {
+    display: flex; align-items: center; gap: 6px; color: #777; font-size: 0.85rem;
+}
+
+.hero-meta-item svg { width: 16px; height: 16px; opacity: 0.5; }
+
+/* STAT CARDS */
+.stats-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px; margin-bottom: 24px;
+}
+
+.stat-card {
+    padding: 16px 20px; border-radius: 3px;
+    background: #fff; border: 1px solid #ddd;
+}
+
+.stat-card .stat-icon {
+    width: 32px; height: 32px; border-radius: 3px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 15px; margin-bottom: 8px;
+}
+
+.stat-card .stat-icon.indigo { background: rgba(220, 38, 38, 0.08); }
+.stat-card .stat-icon.cyan { background: rgba(6, 182, 212, 0.08); }
+.stat-card .stat-icon.emerald { background: rgba(16, 185, 129, 0.08); }
+.stat-card .stat-icon.amber { background: rgba(245, 158, 11, 0.08); }
+
+.stat-card .stat-value {
+    font-size: 1.6rem; font-weight: 700; color: #111; line-height: 1;
+    font-variant-numeric: tabular-nums; margin-bottom: 2px;
+}
+
+.stat-card .stat-label {
+    font-size: 0.7rem; color: #888; font-weight: 500;
+    text-transform: uppercase; letter-spacing: 0.04em;
+}
+
+/* TOOLBAR */
+.toolbar {
+    display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; align-items: stretch;
+}
+
+.search-wrapper { flex: 1; min-width: 280px; position: relative; }
+
+.search-icon {
+    position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+    width: 16px; height: 16px; color: #999; pointer-events: none;
+}
+
+.search-input {
+    width: 100%; padding: 9px 12px 9px 36px; border-radius: 3px;
+    border: 1px solid #ccc; background: #fff; color: #111;
+    font-size: 0.9rem; transition: border-color 0.15s;
+}
+.search-input:focus { outline: none; border-color: #dc2626; }
+.search-input::placeholder { color: #aaa; }
+
+.search-kbd {
+    position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+    padding: 1px 6px; border-radius: 2px; background: #f0f0f0;
+    border: 1px solid #ddd; color: #999; font-size: 0.65rem; font-family: monospace;
+}
+
+.filter-group {
+    display: flex; gap: 2px; background: #fff;
+    border-radius: 3px; border: 1px solid #ccc; padding: 2px;
+}
+
+.filter-btn {
+    padding: 6px 14px; border-radius: 2px; border: none;
+    background: transparent; color: #777; font-size: 0.78rem; font-weight: 500;
+    cursor: pointer; white-space: nowrap;
+}
+.filter-btn:hover { color: #111; background: #f0f0f0; }
+.filter-btn.active { color: #fff; background: #dc2626; }
+
+.opr-range {
+    display: flex; align-items: center; gap: 8px; padding: 0 14px;
+    background: #fff; border-radius: 3px; border: 1px solid #ccc;
+}
+.opr-range label { font-size: 0.72rem; color: #777; font-weight: 500; white-space: nowrap; }
+.opr-range input[type="range"] { width: 100px; accent-color: #dc2626; }
+.opr-range .range-val { font-family: monospace; font-size: 0.78rem; color: #06b6d4; min-width: 30px; }
+
+/* TABLE */
+.table-wrapper {
+    border-radius: 3px; background: #fff; border: 1px solid #ddd; overflow: hidden;
+}
+
+.data-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.data-table thead { position: sticky; top: 0; z-index: 10; }
+
+.data-table th {
+    padding: 10px 12px; text-align: left; font-weight: 600;
+    font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.04em;
+    color: #666; background: #fafafa; border-bottom: 2px solid #e0e0e0;
+    cursor: pointer; user-select: none; white-space: nowrap;
+}
+
+.data-table th:hover { color: #dc2626; }
+.data-table th.sorted { color: #dc2626; }
+
+.data-table th .sort-arrow {
+    display: inline-block; margin-left: 3px; opacity: 0; font-size: 0.6rem;
+}
+.data-table th.sorted .sort-arrow { opacity: 1; }
+.data-table th.sorted.asc .sort-arrow::after { content: ' B2'; }
+.data-table th.sorted.desc .sort-arrow::after { content: ' BC'; }
+
+.data-table td {
+    padding: 10px 12px; border-bottom: 1px solid #eee;
+}
+
+.data-table tbody tr { cursor: pointer; }
+.data-table tbody tr:hover { background: #f8f8f8; }
+.data-table tbody tr:hover td:first-child { box-shadow: inset 3px 0 0 #dc2626; }
+
+.data-table tbody tr.rank-1 { background: #fffbf0; }
+.data-table tbody tr.rank-2 { background: #f9fafb; }
+.data-table tbody tr.rank-3 { background: #fef7ee; }
+.data-table tbody tr.rank-1 td:first-child { box-shadow: inset 3px 0 0 #f59e0b; }
+.data-table tbody tr.rank-2 td:first-child { box-shadow: inset 3px 0 0 #94a3b8; }
+.data-table tbody tr.rank-3 td:first-child { box-shadow: inset 3px 0 0 #b45309; }
+
+.cell-rank { font-weight: 700; color: #999; width: 44px; font-variant-numeric: tabular-nums; }
+.cell-rank.top-3 { color: #d97706; }
+
+.cell-team-num { font-weight: 600; color: #06b6d4; font-family: monospace; font-size: 0.88rem; }
+.cell-team-name { font-weight: 600; color: #111; max-width: 200px; }
+.cell-location { color: #777; font-size: 0.8rem; max-width: 170px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.cell-stat { text-align: center; font-family: monospace; font-weight: 500; font-size: 0.85rem; font-variant-numeric: tabular-nums; }
+.cell-stat.opr { color: #dc2626; font-weight: 700; }
+.cell-stat.auto { color: #059669; }
+.cell-stat.dc { color: #06b6d4; }
+.cell-stat.record { color: #888; font-size: 0.8rem; }
+.cell-stat.rank { color: #d97706; }
+
+.cell-bar { width: 100%; max-width: 70px; }
+.opr-bar { height: 3px; border-radius: 1px; background: #eee; overflow: hidden; }
+.opr-bar-fill { height: 100%; border-radius: 1px; background: #dc2626; }
+
+.table-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 16px; border-top: 1px solid #eee; background: #fafafa;
+}
+.table-footer .showing { font-size: 0.75rem; color: #888; }
+.table-footer .showing strong { color: #333; }
+
+/* MODAL */
+.modal-backdrop {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+    z-index: 1000; display: flex; align-items: center; justify-content: center;
+    padding: 20px; opacity: 0; visibility: hidden; transition: all 0.2s;
+}
+.modal-backdrop.open { opacity: 1; visibility: visible; }
+
+.modal {
+    width: 100%; max-width: 780px; max-height: 85vh;
+    background: #fff; border: 1px solid #ccc; border-radius: 4px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.15); overflow: hidden;
+}
+
+.modal-head {
+    padding: 20px 24px 16px; border-bottom: 1px solid #eee;
+}
+
+.modal-close {
+    position: absolute; top: 14px; right: 14px;
+    width: 30px; height: 30px; border-radius: 3px;
+    border: 1px solid #ddd; background: #fff; color: #666;
+    font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+.modal-close:hover { background: #f5f5f5; color: #111; }
+
+.modal-team-num {
+    font-size: 0.75rem; font-weight: 600; color: #06b6d4;
+    font-family: monospace; margin-bottom: 2px;
+}
+.modal-team-name { font-size: 1.5rem; font-weight: 700; color: #111; letter-spacing: -0.01em; }
+.modal-team-loc { color: #777; font-size: 0.85rem; margin-top: 2px; }
+
+.modal-body { padding: 20px 24px; overflow-y: auto; max-height: calc(85vh - 130px); }
+
+.modal-section { margin-bottom: 24px; }
+.modal-section-title {
+    font-size: 0.7rem; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.06em; color: #888; margin-bottom: 12px;
+    padding-bottom: 6px; border-bottom: 1px solid #eee;
+}
+
+.modal-stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
+
+.modal-stat {
+    padding: 12px; background: #fafafa; border-radius: 3px; border: 1px solid #eee;
+}
+.modal-stat .label {
+    font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.04em;
+    color: #999; margin-bottom: 3px;
+}
+.modal-stat .value { font-size: 1.2rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+.modal-stat .value.c1 { color: #dc2626; }
+.modal-stat .value.c2 { color: #06b6d4; }
+.modal-stat .value.c3 { color: #059669; }
+.modal-stat .value.c4 { color: #d97706; }
+.modal-stat .value.c5 { color: #ef4444; }
+.modal-stat .value.c6 { color: #06b6d4; }
+
+.radar-container { display: flex; justify-content: center; padding: 12px 0; }
+.radar-container canvas { max-width: 280px; max-height: 280px; }
+
+.sponsor-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.sponsor-tag {
+    padding: 3px 10px; border-radius: 3px;
+    background: rgba(220, 38, 38, 0.06); border: 1px solid rgba(220, 38, 38, 0.15);
+    color: #dc2626; font-size: 0.75rem; font-weight: 500;
+}
+
+.modal-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 18px; border-radius: 3px;
+    background: #dc2626; color: #fff; text-decoration: none;
+    font-weight: 600; font-size: 0.85rem; margin-top: 12px;
+}
+.modal-link:hover { background: #b91c1c; }
+
+/* COMPARE */
+.compare-bar {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+    padding: 12px 20px; background: #fff;
+    border-top: 2px solid #dc2626;
+    display: flex; align-items: center; justify-content: space-between;
+    transform: translateY(100%); transition: transform 0.2s;
+}
+.compare-bar.visible { transform: translateY(0); }
+
+.compare-teams { display: flex; gap: 10px; align-items: center; }
+
+.compare-chip {
+    display: flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border-radius: 3px;
+    background: #f5f5f5; border: 1px solid #ddd; font-size: 0.8rem; color: #333;
+}
+.compare-chip .remove {
+    width: 16px; height: 16px; border-radius: 50%; border: none;
+    background: rgba(239, 68, 68, 0.1); color: #ef4444; font-size: 11px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+
+.compare-action {
+    padding: 8px 20px; border-radius: 3px; border: none;
+    background: #dc2626; color: #fff; font-weight: 600; font-size: 0.85rem; cursor: pointer;
+}
+.compare-action:hover { background: #b91c1c; }
+
+.compare-table { width: 100%; border-collapse: collapse; }
+.compare-table th, .compare-table td { padding: 10px 14px; text-align: center; border-bottom: 1px solid #eee; }
+.compare-table th { background: #fafafa; color: #666; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.04em; font-weight: 600; }
+.compare-table td:first-child { text-align: left; color: #666; font-size: 0.8rem; font-weight: 500; }
+.compare-table .winner { color: #059669; font-weight: 700; }
+
+/* EMPTY / FOOTER */
+.empty-state { text-align: center; padding: 40px 20px; color: #999; }
+.empty-state .icon { font-size: 2rem; margin-bottom: 12px; opacity: 0.5; }
+.empty-state .title { font-size: 1rem; font-weight: 600; color: #666; margin-bottom: 4px; }
+
+.footer {
+    text-align: center; padding: 32px 20px; color: #aaa; font-size: 0.75rem;
+    border-top: 1px solid #e0e0e0; margin-top: 40px;
+}
+.footer a { color: #dc2626; text-decoration: none; font-weight: 500; }
+.footer a:hover { text-decoration: underline; }
+
+/* RESPONSIVE */
+@media (max-width: 1024px) {
+    .toolbar { flex-direction: column; }
+    .filter-group { overflow-x: auto; }
+    .opr-range { width: 100%; justify-content: center; }
+}
+@media (max-width: 768px) {
+    .hero h1 { font-size: 1.6rem; }
+    .hero-meta { flex-direction: column; align-items: center; gap: 6px; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .nav-actions { display: none; }
+}
+
+/* TOOLTIP */
+[data-tooltip] { position: relative; }
+[data-tooltip]::after {
+    content: attr(data-tooltip); position: absolute;
+    bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%);
+    padding: 4px 8px; border-radius: 2px; background: #333; color: #fff;
+    font-size: 0.7rem; white-space: nowrap; pointer-events: none;
+    opacity: 0; transition: opacity 0.15s; z-index: 50;
+}
+[data-tooltip]:hover::after { opacity: 1; }
+</style>
+</head>
+<body>
+<div class="app">
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container navbar-inner">
+            <a class="nav-brand" href="#">
+                <div class="nav-logo">C</div>
+                <div>
+                    <div class="nav-title">CRI Scouting</div>
+                    <div class="nav-subtitle">Chicago Robotics Invitational</div>
+                </div>
+            </a>
+            <div class="nav-actions">
+                <div class="nav-pill active"><span class="dot"></span> Live Data</div>
+                <div class="nav-pill" onclick="exportCSV()">⬇ Export CSV</div>
+                <div class="nav-pill" onclick="window.open('https://ftcscout.org/events/2025/FPECRI','_blank')">FTCScout ↗</div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <div class="container">
+        <div class="hero">
+            <div class="hero-badge"><span class="pulse-dot"></span> 2025 Season — Premier Event</div>
+            <h1>Chicago Robotics Invitational</h1>
+            <p class="hero-sub">Elite scouting intelligence for the world's premier FTC competition. Real-time OPR analysis, team comparisons, and performance metrics.</p>
+            <div class="hero-meta">
+                <div class="hero-meta-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    Jul 24 – 26, 2026
+                </div>
+                <div class="hero-meta-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    Francis W. Parker School, Chicago IL
+                </div>
+                <div class="hero-meta-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+                    <span id="teamCount">44</span> Teams
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon indigo">🏆</div>
+                <div class="stat-value" id="statTeams">0</div>
+                <div class="stat-label">Teams Registered</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon cyan">⚡</div>
+                <div class="stat-value" id="statOprAvg">0</div>
+                <div class="stat-label">Average npOPR</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon emerald">🎯</div>
+                <div class="stat-value" id="statOprMax">0</div>
+                <div class="stat-label">Peak npOPR</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon amber">📊</div>
+                <div class="stat-value" id="statMedian">0</div>
+                <div class="stat-label">Median npOPR</div>
+            </div>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <div class="search-wrapper">
+                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input class="search-input" type="text" id="searchInput" placeholder="Search teams, numbers, locations...">
+                <span class="search-kbd">/</span>
+            </div>
+            <div class="filter-group" id="sortGroup">
+                <button class="filter-btn active" data-sort="npOpr">OPR</button>
+                <button class="filter-btn" data-sort="name">Name</button>
+                <button class="filter-btn" data-sort="number">Number</button>
+                <button class="filter-btn" data-sort="bestEventAvgPoints">Avg Pts</button>
+                <button class="filter-btn" data-sort="rookieYear">Rookie</button>
+            </div>
+            <div class="opr-range">
+                <label>Min OPR:</label>
+                <input type="range" id="oprSlider" min="0" max="300" value="0" step="5">
+                <span class="range-val" id="oprSliderVal">0</span>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="table-wrapper">
+            <div class="table-scroll">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th data-col="rank" class="sorted" onclick="sortCol('rank')">#<span class="sort-arrow"></span></th>
+                            <th data-col="number" onclick="sortCol('number')">Team<span class="sort-arrow"></span></th>
+                            <th data-col="name" onclick="sortCol('name')">Name<span class="sort-arrow"></span></th>
+                            <th data-col="location" onclick="sortCol('location')">Location<span class="sort-arrow"></span></th>
+                            <th data-col="npOpr" onclick="sortCol('npOpr')">npOPR<span class="sort-arrow"></span></th>
+                            <th>Visual</th>
+                            <th data-col="bestEventAvgPoints" onclick="sortCol('bestEventAvgPoints')">Avg Pts<span class="sort-arrow"></span></th>
+                            <th data-col="bestEventAvgAuto" onclick="sortCol('bestEventAvgAuto')">Auto<span class="sort-arrow"></span></th>
+                            <th data-col="bestEventAvgDC" onclick="sortCol('bestEventAvgDC')">DC<span class="sort-arrow"></span></th>
+                            <th data-col="record" onclick="sortCol('record')">W-L-T<span class="sort-arrow"></span></th>
+                            <th data-col="bestEventRank" onclick="sortCol('bestEventRank')">Best Rank<span class="sort-arrow"></span></th>
+                            <th data-col="eventsPlayed" onclick="sortCol('eventsPlayed')">Events<span class="sort-arrow"></span></th>
+                            <th style="width:40px"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
+            <div class="table-footer">
+                <div class="showing">Showing <strong id="showCount">44</strong> of <strong id="totalCount">44</strong> teams</div>
+                <div style="display:flex;gap:8px">
+                    <button class="filter-btn" onclick="toggleCompareMode()" id="compareToggle">☐ Compare</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Data powered by <a href="https://ftcscout.org" target="_blank">FTCScout</a> • Built for CRI 2026</p>
+        </div>
+    </div>
+</div>
+
+<!-- Compare Bar -->
+<div class="compare-bar" id="compareBar">
+    <div class="compare-teams" id="compareChips"></div>
+    <div style="display:flex;gap:8px">
+        <button class="compare-action" onclick="openCompareModal()">Compare Selected</button>
+        <button class="filter-btn" onclick="clearCompare()" style="border:1px solid var(--border-200)">Clear</button>
+    </div>
+</div>
+
+<!-- Team Detail Modal -->
+<div class="modal-backdrop" id="detailModal">
+    <div class="modal">
+        <div class="modal-head">
+            <button class="modal-close" onclick="closeModal('detailModal')">✕</button>
+            <div class="modal-team-num" id="modalNum"></div>
+            <div class="modal-team-name" id="modalName"></div>
+            <div class="modal-team-loc" id="modalLoc"></div>
+        </div>
+        <div class="modal-body" id="modalBody"></div>
+    </div>
+</div>
+
+<!-- Compare Modal -->
+<div class="modal-backdrop" id="compareModal">
+    <div class="modal" style="max-width:900px">
+        <div class="modal-head">
+            <button class="modal-close" onclick="closeModal('compareModal')">✕</button>
+            <div class="modal-team-num">SIDE-BY-SIDE</div>
+            <div class="modal-team-name">Team Comparison</div>
+        </div>
+        <div class="modal-body" id="compareBody"></div>
+    </div>
+</div>
+
+<script>
+// ============================================
+// DATA — Injected at build time
+// ============================================
+const TEAMS_DATA = [{"number": 11329, "name": "I.C.E. Robotics", "school": "Family/Community", "sponsors": ["The Raymond Foundation", "IU Luddy School of Informatics, Computing, and Engineering", "Indiana Department of Education", "Hans-Otto Meyer", "Gene Haas Foundation", "DoDSTEM", "Intuitive Foundation", "RoboBoosters Inc.", "The Quadrangles FRC Team 3494", "NAVSEA Warfare Centers Crane"], "city": "Bloomington", "state": "IN", "country": "USA", "rookieYear": 2016, "website": "https://www.thequadrangles.org/ftc-11329", "npOpr": 221.32, "quickStats": {"season": 2025, "number": 11329, "tot": {"value": 221.3162799109375, "rank": 11}, "auto": {"value": 57.69739488564835, "rank": 11}, "dc": {"value": 163.6188850252891, "rank": 18}, "eg": {"value": 15.28473139185811, "rank": 70}, "count": 8347}, "bestEventName": "N/A", "bestEventRank": 1, "bestEventWins": 10, "bestEventLosses": 0, "bestEventTies": 0, "bestEventAvgPoints": 345.8, "bestEventAvgAuto": 84.9, "bestEventAvgDC": 260.9, "eventsPlayed": 9}, {"number": 18221, "name": "Meta^Infinity", "school": "Family/Community", "sponsors": [], "city": "Highland Park", "state": "IL", "country": "USA", "rookieYear": 2020, "website": "https://metainfinity.org/", "npOpr": 219.52, "quickStats": {"season": 2025, "number": 18221, "tot": {"value": 219.52425143031846, "rank": 12}, "auto": {"value": 51.796124259093936, "rank": 43}, "dc": {"value": 167.72812717122468, "rank": 14}, "eg": {"value": 12.156302189366478, "rank": 405}, "count": 8347}, "bestEventName": "N/A", "bestEventRank": 3, "bestEventWins": 9, "bestEventLosses": 1, "bestEventTies": 0, "bestEventAvgPoints": 328.7, "bestEventAvgAuto": 79.8, "bestEventAvgDC": 248.9, "eventsPlayed": 11}, {"number": 19652, "name": "Techineers", "school": "Family/Community", "sponsors": ["HORIZON ROBOTICS ACADEMY"], "city": "Naperville", "state": "IL", "country": "USA", "rookieYear": 2021, "website": "https://www.ftc19652.org/", "npOpr": 202.62, "quickStats": {"season": 2025, "number": 19652, "tot": {"value": 202.62095049655517, "rank": 27}, "auto": {"value": 41.439796030454374, "rank": 176}, "dc": {"value": 178.16406191423965, "rank": 8}, "eg": {"value": 9.952032640833078, "rank": 1404}, "count": 8347}, "bestEventName": "N/A", "bestEventRank": 16, "bestEventWins": 5, "bestEventLosses": 3, "bestEventTies": 0, "bestEventAvgPoints": 382.4, "bestEventAvgAuto": 71.6, "bestEventAvgDC": 310.8, "eventsPlayed": 12}, {"number": 23286, "name": "Lazer Robotics", "school": "Family/Community", "sponsors": ["Gene Haas Foundation", "Shark Ninja", "Talent Burst", "The Village Bank", "SWYFT Robotics"], "city": "Newton Center", "state": "MA", "country": "USA", "rookieYear": 2023, "website": "https://lazerrobotics.wixsite.com/lazerrobotics", "npOpr": 202.37, "quickStats": {"season": 2025, "number": 23286, "tot": {"value": 202.3659244387494, "rank": 28}, "auto": {"value": 50.525306802318894, "rank": 55}, "dc": {"value": 154.55951459740015, "rank": 25}, "eg": {"value": 15.955548235546404, "rank": 39}, "count": 8347}, "bestEventName": "N/A", "bestEventRank": 1, "bestEventWins": 5, "bestEventLosses": 0, "bestEventTies": 0, "bestEventAvgPoints": 279.2, "bestEventAvgAuto": 72.2, "bestEventAvgDC": 207, "eventsPlayed": 9}, {"number": 14204, "name": "Super Scream Bros", "school": "4-H", "sponsors": ["Macon County 4-H & Extension Foundation", "Flip Side Technologies", "Caterpillar Inc.", "C & P Custom Printing"], "city": "Decatur", "state": "IL", "country": "USA", "rookieYear": 2017, "website": "https://www.4hscream.org", "npOpr": 195.21, "quickStats": {"season": 2025, "number": 14204, "tot": {"value": 195.21089163648895, "rank": 38}, "auto": {"value": 41.36468016018538, "rank": 180}, "dc": {"value": 156.47512623035738, "rank": 23}, "eg": {"value": 11.09121133982707, "rank": 777}, "count": 8347}, "bestEventName": "N/A", "bestEventRank": 1, "bestEventWins": 9, "bestEventLosses": 1, "bestEventTies": 0, "bestEventAvgPoints": 282.3, "bestEventAvgAuto": 60.8, "bestEventAvgDC": 221.5, "eventsPlayed": 11}, {"number": 21171, "name": "ITKAN Lunar", "school": "Family/Community", "sponsors": ["LXT", "Swyft Robotics", "Gently", "MedRock Dermatology", "Texas Instruments"], "city": "Plano", "state": "TX", "country": "USA", "rookieYear": 2021, "website": null, "npOpr": 193.55, "quickStats": {"season": 2025, "number": 21171, "tot": {"value": 193.54810571993548, "rank": 41}, "auto": {"value": 51.01701053407559, "rank": 50}, "dc": {"value": 154.15948483198946, "rank": 27}, "eg": {"value": 10.572718741975516, "rank": 1012}, "count": 8347}, "bestEventName": "N/A", "bestEventRank": 3, "bestEventWins": 7, "bestEventLosses": 1, "bestEventTies": 0, "bestEventAvgPoints": 287.5, "bestEventAvgAuto": 76.6, "bestEventAvgDC": 210.9, "eventsPlayed": 11}, {"number": 25650, "name": "One Small Step for an Axolotl", "school": "Family/Community", "sponsors": ["Google.org & Haas"], "city": "Lititz", "state": "PA", "country": "USA", "rookieYear": 2024, "website": null, "npOpr": 186.56, "quickStats": {"season": 2025, "number": 25650, "tot": {"value": 186.56383348213083, "rank": 47}, "auto": {"value": 54.3939277452475, "rank": 31}, "dc": {"value": 132.16990573688338, "rank": 73}, "eg": {"value": 9.732335167164976, "rank": 1559}, "count": 8347}, "bestEventName": "N/A", "bestEventRank": 8, "bestEventWins": 6, "bestEventLosses": 2, "bestEventTies": 0, "bestEventAvgPoints": 360.4, "bestEventAvgAuto": 92, "bestEventAvgDC": 268.4, "eventsPlayed": 8}, {"number": 25620, "name": "Hexadecimal Nibble", "school": "Family/Community", "sponsors": [], "city": "Scottsdale", "state": "AZ", "country": "USA", "rookieYear": 2024, "website": "https://www.hexnibble.org", "npOpr": 165.79, "quickStats": {"season": 2025, "number": 25620, "tot": {"value": 165.79068128898174, "rank": 96}, "auto": {"value": 37.929908869318844, "rank": 282}, "dc": {"value": 130.1439661547402, "rank": 84}, "eg": {"value": 11.854803692623392, "rank": 490}, "count": 8347}, "bestEventName": "N/A", "bestEventRank": 5, "bestEventWins": 9, "bestEventLosses": 1, "bestEventTies": 0, "bestEventAvgPoints": 278.1, "bestEventAvgAuto": 64.7, "bestEventAvgDC": 213.4, "eventsPlayed": 8}, {"number": 30579, "name": "PUNISHERS", "school": "Family/Community", "sponsors": [], "city": "Fargo", "state": "ND", "country": "USA", "rookieYear": 2025, "website": null, "npOpr": 165.49, "quickStats": {"season": 2025, "number": 30579, "tot": {"value": 165.49182657246791, "rank": 97}, "auto": {"value": 47.2117129684237, "rank": 86}, "dc": {"value": 118.28011360404417, "rank": 139}, "eg": {"value": 8.681359378918245, "rank": 2483}, "count": 8347}, "bestEventName": "N/A", "bestEventRank": 17, "bestEventWins": 5, "bestEventLosses": 3, "bestEventTies": 0, "bestEventAvgPoints": 350.5, "bestEventAvgAuto": 90.6, "bestEventAvgDC": 259.9, "eventsPlayed": 5}, {"number": 23644, "name": "Skeleton Army", "school": "Rabin High School", "sponsors": ["Halom NGO", "Kfar Sava Municiplity", "IronLaser", "Shivuk Shay", "NiCE&Galily High School&Katznelson High School&Hertzog High School"], "city": "Kfar Sava", "state": "M", "country": "Israel", "rookieYear": 2023, "website": "https://www.instagram.com/skeleton.armyks/", "npOpr": 163.42, "quickStats": {"season": 2025, "number": 23644, "tot": {"value": 163.42228809065472, "rank": 102}, "auto": {"value": 45.16019327102934, "rank": 114}, "dc": {"value": 130.93590114050986, "rank": 81}, "eg": {"value": 12.399268826793087, "rank": 359}, "count": 8347}, "bestEventName": "N/A", "bestEventRank": 1, "bestEventWins": 6, "bestEventLosses": 0, "bestEventTies": 0, "bestEventAvgPoints": 227.2, "bestEventAvgAuto": 45.7, "bestEventAvgDC": 181.5, "eventsPlayed": 5}, {"number": 22131, "name": "Traffic Cones", "school": "Creighton Preparatory School", "sponsors": [], "city": "Omaha", "state": "NE", "country": "USA", "rookieYear": 2022, "website": "https://www.creightonprep.org", "npOpr": 151.11, "quickStats": {"season": 2025, "number": 22131, "tot": {"value": 151.11310487453463, "rank": 158}, "auto": {"value": 41.717260249877306, "rank": 170}, "dc": {"value": 109.39584462465733, "rank": 196}, "eg": {"value": 8.721962084956354, "rank": 2430}, "count": 8347}, "bestEventName": "N/A", "bestEventRank": 1, "bestEventWins": 5, "bestEventLosses": 0, "bestEventTies": 0, "bestEventAvgPoints": 194.8, "bestEventAvgAuto": 47.2, "bestEventAvgDC": 147.6, "eventsPlayed": 7}, {"number": 24478, "name": "EngiNeerds", "school": "Colegiul National \"Radu Greceanu\"", "sponsors": [], "city": "Slatina", "state": "OT", "country": "Romania", "rookieYear": 2023, "website": "https://engineerds.cnrg.ro/", "npOpr": 148.55, "quickStats": {"season": 2025, "number": 24478, "tot": {"value": 148.54507175777576, "rank": 168}, "auto": {"value": 43.971213636393735, "rank": 128}, "dc": {"value": 104.57385812138203, "rank": 230}, "eg": {"value": 12.029018146146822, "rank": 438}, "count": 8347}, "bestEventName": "N/A", "bestEventRank": 3, "bestEventWins": 5, "bestEventLosses": 1, "bestEventTies": 0, "bestEventAvgPoints": 216, "bestEventAvgAuto": 61.8, "bestEventAvgDC": 154.2, "eventsPlayed": 9}, {"number": 19411, "name": "Tech Tigers", "school": "Family/Community", "sponsors": ["Analog Devices", "Schneider Electric", "Gene Haas", "REV Robotics", "Polymaker", "Costco", "PTC (Onshape)"], "city": "Sharon", "state": "MA", "country": "USA", "rookieYear": 2021, "website": "https://www.techtigers.team", "npOpr": 139.65, "quickStats": {"season": 2025, "number": 19411, "tot": {"value": 139.6512597721672, "rank": 213}, "auto": {"value": 37.932052953834955, "rank": 281}, "dc": {"value": 101.71920681833222, "rank": 258}, "eg": {"value": 13.765444877606734, "rank": 178}, "count": 8347}, "bestEventName": "N/A", "bestEventRank": 14, "bestEventWins": 8, "bestEventLosses": 2, "bestEventTies": 0, "bestEventAvgPoints": 248.3, "bestEventAvgAuto": 67.5, "bestEventAvgDC": 180.8, "eventsPlayed": 9}, {"number": 25444, "name": "The Reckless", "school": "Adventist Robotics", "sponsors": [], "city": "Tashkent", "state": "TK", "country": "Uzbekistan", "rookieYear": 2023, "website": null, "npOpr": 130.18, "quickStats": {"season": 2025, "number": 25444, "tot": {"value": 130.18267211530807, "rank": 290}, "auto": {"value": 28.613075035777033, "rank": 839}, "dc": {"value": 101.56959707953105, "rank": 261}, "eg": {"value": 5.592360842264063, "rank": 6230}, "count": 8347}, "bestEventName": "N/A", "bestEventRank": 6, "bestEventWins": 3, "bestEventLosses": 2, "bestEventTies": 0, "bestEventAvgPoints": 173.8, "bestEventAvgAuto": 36.8, "bestEventAvgDC": 137, "eventsPlayed": 7}, {"number": 14596, "name": "XLR8", "school": "Family/Community", "sponsors": ["GEARS, Inc.", "Gene Haas", "Precision Door", "Polymaker"], "city": "Osceola", "state": "IN", "country": "USA", "rookieYear": 2018, "website": "https://www.gears.org.in", "npOpr": 127.37, "quickStats": {"season": 2025, "number": 14596, "tot": {"value": 127.37418597256318, "rank": 312}, "auto": {"value": 25.755798189362594, "rank": 1057}, "dc": {"value": 113.12153567752982, "rank": 168}, "eg": {"value": 9.680350079848314, "rank": 1594}, "count": 8347}, "bestEventName": "N/A", "bestEventRank": 17, "bestEventWins": 5, "bestEventLosses": 5, "bestEventTies": 0, "bestEventAvgPoints": 228.2, "bestEventAvgAuto": 41.8, "bestEventAvgDC": 186.4, "eventsPlayed": 10}, {"number": 25538, "name": "ARRA", "school": "Colegiul Economic \"Maria Teiuleanu\"", "sponsors": ["Family", "Community"], "city": "Pitesti", "state": "AG", "country": "Romania", "rookieYear": 2023, "website": null, "npOpr": 124.97, "quickStats": {"season": 2025, "number": 25538, "tot": {"value": 124.97076330532214, "rank": 335}, "auto": {"value": 33.975899613176225, "rank": 487}, "dc": {"value": 91.90738795518212, "rank": 351}, "eg": {"value": 10.249846096573211, "rank": 1186}, "count": 8347}, "bestEventName": "N/A", "bestEventRank": 1, "bestEventWins": 6, "bestEventLosses": 0, "bestEventTies": 0, "bestEventAvgPoints": 173.3, "bestEventAvgAuto": 46, "bestEventAvgDC": 127.3, "eventsPlayed": 11}, {"number": 12971, "name": "Ctrl-Y", "school": "4-H", "sponsors": ["John Deere", "Illini Robotics", "Libman Company"], "city": "Champaign", "state": "IL", "country": "USA", "rookieYear": 2017, "website": "https://ftc.ctrlyrobotics.org/", "npOpr": 120.1, "quickStats": {"season": 2025, "number": 12971, "tot": {"value": 120.09718305531528, "rank": 367}, "auto": {"value": 30.79029473291873, "rank": 682}, "dc": {"value": 89.30688832239655, "rank": 375}, "eg": {"value": 8.434825330824328, "rank": 2756}, "count": 8347}, "bestEventName": "N/A", "bestEventRank": 8, "bestEventWins": 4, "bestEventLosses": 3, "bestEventTies": 0, "bestEventAvgPoints": 181.6, "bestEventAvgAuto": 45, "bestEventAvgDC": 136.6, "eventsPlayed": 7}, {"number": 20524, "name": "Cyber Vipers", "school": "Sciences", "sponsors": ["Valley Academy Arts"], "city": "Granada Hills", "state": "CA", "country": "USA", "rookieYear": 2021, "website": null, "npOpr": 120.08, "quickStats": {"season": 2025, "number": 20524, "tot": {"value": 120.08491096953608, "rank": 368}, "auto": {"value": 31.58094734902581, "rank": 626}, "dc": {"value": 99.45185623795122, "rank": 278}, "eg": {"value": 9.999999999999996, "rank": 1372}, "count": 8347}, "bestEventName": "N/A", "bestEventRank": 9, "bestEventWins": 6, "bestEventLosses": 4, "bestEventTies": 0, "bestEventAvgPoints": 204.4, "bestEventAvgAuto": 42.5, "bestEventAvgDC": 161.9, "eventsPlayed": 6}, {"number": 23802, "name": "Random Engineers", "school": "Grafton High School", "sponsors": [], "city": "Grafton", "state": "WI", "country": "USA", "rookieYear": 2023, "website": null, "npOpr": 114.77, "quickStats": {"season": 2025, "number": 23802, "tot": {"value": 114.77194245156673, "rank": 434}, "auto": {"value": 41.618163032562116, "rank": 173}, "dc": {"value": 81.97891118361734, "rank": 491}, "eg": {"value": 5.097300561030064, "rank": 6698}, "count": 8347}, "bestEventName": "N/A", "bestEventRank": 3, "bestEventWins": 5, "bestEventLosses": 1, "bestEventTies": 0, "bestEventAvgPoints": 204.7, "bestEventAvgAuto": 55.3, "bestEventAvgDC": 149.3, "eventsPlayed": 5}, {"number": 12560, "name": "Soft Hoarders", "school": "\"Fraţii Buzeşti\" National Collage", "sponsors": [], "city": "Craiova", "state": "DJ", "country": "Romania", "rookieYear": 2016, "website": "https://www.soft-hoarders.com/", "npOpr": 113.75, "quickStats": {"season": 2025, "number": 12560, "tot": {"value": 113.75473407976742, "rank": 442}, "auto": {"value": 37.57051739205654, "rank": 300}, "dc": {"value": 95.25361135667185, "rank": 319}, "eg": {"value": 13.36634246296224, "rank": 227}, "count": 8347}, "bestEventName": "N/A", "bestEventRank": 4, "bestEventWins": 5, "bestEventLosses": 1, "bestEventTies": 0, "bestEventAvgPoints": 194.8, "bestEventAvgAuto": 44.3, "bestEventAvgDC": 150.5, "eventsPlayed": 10}, {"number": 23055, "name": "Tech Fenix", "school": "Firjan SESI São Gonçalo", "sponsors": [], "city": "São Gonçalo ", "state": "RJ", "country": "Brazil", "rookieYear": 2022, "website": null, "npOpr": 112.86, "quickStats": {"season": 2025, "number": 23055, "tot": {"value": 112.86216052411031, "rank": 452}, "auto": {"value": 30.042229494178475, "rank": 728}, "dc": {"value": 82.81993102993182, "rank": 473}, "eg": {"value": 8.43587696557613, "rank": 2754}, "count": 8347}, "bestEventName": "N/A", "bestEventRank": 4, "bestEventWins": 6, "bestEventLosses": 2, "bestEventTies": 0, "bestEventAvgPoints": 178.1, "bestEventAvgAuto": 48.8, "bestEventAvgDC": 129.4, "eventsPlayed": 3}, {"number": 16008, "name": "Armored Artemises", "school": "Family/Community", "sponsors": ["PTC", "Gene Haas Foundation", "Rev Robotics", "RTX", "Otis", "Online Metals"], "city": "Glastonbury", "state": "CT", "country": "USA", "rookieYear": 2018, "website": "https://ftc16008.org/", "npOpr": 110.13, "quickStats": {"season": 2025, "number": 16008, "tot": {"value": 110.1340411269933, "rank": 489}, "auto": {"value": 45.65040725049241, "rank": 108}, "dc": {"value": 81.90130645436822, "rank": 494}, "eg": {"value": 10.044247856995376, "rank": 1336}, "count": 8347}, "bestEventName": "N/A", "bestEventRank": 1, "bestEventWins": 5, "bestEventLosses": 0, "bestEventTies": 0, "bestEventAvgPoints": 148.6, "bestEventAvgAuto": 51.4, "bestEventAvgDC": 97.2, "eventsPlayed": 10}, {"number": 26192, "name": "Heatwaves", "school": "Family/Community", "sponsors": [], "city": "Waukee", "state": "IA", "country": "USA", "rookieYear": 2024, "website": null, "npOpr": 106.8, "quickStats": {"season": 2025, "number": 26192, "tot": {"value": 106.80120353124228, "rank": 537}, "auto": {"value": 25.75705117515059, "rank": 1056}, "dc": {"value": 81.04415235609171, "rank": 506}, "eg": {"value": 9.388077265568326, "rank": 1829}, "count": 8347}, "bestEventName": "N/A", "bestEventRank": 5, "bestEventWins": 5, "bestEventLosses": 1, "bestEventTies": 0, "bestEventAvgPoints": 160, "bestEventAvgAuto": 44.2, "bestEventAvgDC": 115.8, "eventsPlayed": 14}, {"number": 28067, "name": "Mystery Plus", "school": "Family/Community", "sponsors": [], "city": "Tainan", "state": "TNN", "country": "Taiwan", "rookieYear": 2024, "website": null, "npOpr": 99.47, "quickStats": {"season": 2025, "number": 28067, "tot": {"value": 99.46771996703097, "rank": 629}, "auto": {"value": 40.17163596511606, "rank": 210}, "dc": {"value": 59.296084001914906, "rank": 1031}, "eg": {"value": 5.767118989240423, "rank": 6073}, "count": 8347}, "bestEventName": "N/A", "bestEventRank": 4, "bestEventWins": 5, "bestEventLosses": 0, "bestEventTies": 0, "bestEventAvgPoints": 157.6, "bestEventAvgAuto": 56.2, "bestEventAvgDC": 101.4, "eventsPlayed": 2}, {"number": 15909, "name": "Devolt Deimos", "school": "Preparatoria Tecmilenio Campus Chihuahua", "sponsors": ["Gene Haas Foundation"], "city": "Chihuahua", "state": "CHH", "country": "Mexico", "rookieYear": 2018, "website": "https://www.facebook.com/DevoltCUU/", "npOpr": 98.92, "quickStats": {"season": 2025, "number": 15909, "tot": {"value": 98.91954553939587, "rank": 636}, "auto": {"value": 34.124066825614236, "rank": 480}, "dc": {"value": 64.79547871378168, "rank": 849}, "eg": {"value": 12.052542992877182, "rank": 433}, "count": 8347}, "bestEventName": "N/A", "bestEventRank": 12, "bestEventWins": 3, "bestEventLosses": 2, "bestEventTies": 0, "bestEventAvgPoints": 137.4, "bestEventAvgAuto": 46, "bestEventAvgDC": 91.4, "eventsPlayed": 7}, {"number": 4650, "name": "Crusader Kryptos", "school": "Mayer Lutheran High School", "sponsors": ["Mayer Lutheran High School"], "city": "Mayer", "state": "MN", "country": "USA", "rookieYear": 2010, "website": null, "npOpr": 98.42, "quickStats": {"season": 2025, "number": 4650, "tot": {"value": 98.42309984733492, "rank": 642}, "auto": {"value": 32.563404971772094, "rank": 568}, "dc": {"value": 65.85969487556282, "rank": 806}, "eg": {"value": 12.708333333333336, "rank": 300}, "count": 8347}, "bestEventName": "N/A", "bestEventRank": 1, "bestEventWins": 6, "bestEventLosses": 0, "bestEventTies": 0, "bestEventAvgPoints": 121.8, "bestEventAvgAuto": 36.7, "bestEventAvgDC": 85.2, "eventsPlayed": 8}, {"number": 15042, "name": "Ctrl-X", "school": "4-H", "sponsors": ["John Deere", "Illini Robotics", "Libman Company"], "city": "Champaign", "state": "IL", "country": "USA", "rookieYear": 2018, "website": "https://ftc.ctrlyrobotics.org/", "npOpr": 93.05, "quickStats": {"season": 2025, "number": 15042, "tot": {"value": 93.05206263755599, "rank": 741}, "auto": {"value": 30.890665048458178, "rank": 674}, "dc": {"value": 62.16139758909783, "rank": 942}, "eg": {"value": 12.042291813017393, "rank": 434}, "count": 8347}, "bestEventName": "N/A", "bestEventRank": 3, "bestEventWins": 3, "bestEventLosses": 2, "bestEventTies": 0, "bestEventAvgPoints": 133.4, "bestEventAvgAuto": 39.4, "bestEventAvgDC": 94, "eventsPlayed": 7}, {"number": 30526, "name": "BroncoBots", "school": "Spring Hill High School", "sponsors": [], "city": "SPRING HILL", "state": "KS", "country": "USA", "rookieYear": 2025, "website": null, "npOpr": 89.59, "quickStats": {"season": 2025, "number": 30526, "tot": {"value": 89.58881429035048, "rank": 821}, "auto": {"value": 30.040954658270962, "rank": 729}, "dc": {"value": 59.547859632079536, "rank": 1023}, "eg": {"value": 8.489985288907366, "rank": 2695}, "count": 8347}, "bestEventName": "N/A", "bestEventRank": 6, "bestEventWins": 5, "bestEventLosses": 1, "bestEventTies": 0, "bestEventAvgPoints": 163.2, "bestEventAvgAuto": 47.3, "bestEventAvgDC": 115.8, "eventsPlayed": 9}, {"number": 25779, "name": "Action Robotix", "school": "Family/Community", "sponsors": [], "city": "Ballwin", "state": "MO", "country": "USA", "rookieYear": 2024, "website": "https://www.actionrobotix.com", "npOpr": 88.27, "quickStats": {"season": 2025, "number": 25779, "tot": {"value": 88.26924509197686, "rank": 846}, "auto": {"value": 18.099998773428734, "rank": 1814}, "dc": {"value": 70.16924631854816, "rank": 691}, "eg": {"value": 8.774489932407146, "rank": 2384}, "count": 8347}, "bestEventName": "N/A", "bestEventRank": 13, "bestEventWins": 4, "bestEventLosses": 2, "bestEventTies": 0, "bestEventAvgPoints": 149, "bestEventAvgAuto": 34, "bestEventAvgDC": 115, "eventsPlayed": 7}, {"number": 4017, "name": "RoboPandas", "school": "Sewanhaka High School", "sponsors": ["Sewanhaka High School"], "city": "Floral Park", "state": "NY", "country": "USA", "rookieYear": 2009, "website": null, "npOpr": 87.74, "quickStats": {"season": 2025, "number": 4017, "tot": {"value": 87.73762305125686, "rank": 862}, "auto": {"value": 28.959350129176453, "rank": 814}, "dc": {"value": 58.7782729220804, "rank": 1054}, "eg": {"value": 7.2647190828225705, "rank": 4213}, "count": 8347}, "bestEventName": "N/A", "bestEventRank": 2, "bestEventWins": 4, "bestEventLosses": 1, "bestEventTies": 0, "bestEventAvgPoints": 145.4, "bestEventAvgAuto": 45.6, "bestEventAvgDC": 99.8, "eventsPlayed": 5}, {"number": 22482, "name": "Hippobotamus", "school": "Augustine Classical Academy", "sponsors": [], "city": "Mechanicville", "state": "NY", "country": "USA", "rookieYear": 2022, "website": null, "npOpr": 81.81, "quickStats": {"season": 2025, "number": 22482, "tot": {"value": 81.80724407626592, "rank": 1011}, "auto": {"value": 23.182436605077942, "rank": 1279}, "dc": {"value": 58.624807471188035, "rank": 1062}, "eg": {"value": 5.582357112436574, "rank": 6242}, "count": 8347}, "bestEventName": "N/A", "bestEventRank": 14, "bestEventWins": 4, "bestEventLosses": 4, "bestEventTies": 0, "bestEventAvgPoints": 152.8, "bestEventAvgAuto": 37.9, "bestEventAvgDC": 114.9, "eventsPlayed": 4}, {"number": 16460, "name": "GEarheads", "school": "Brookfield Central High School", "sponsors": [], "city": "Brookfield", "state": "WI", "country": "USA", "rookieYear": 2019, "website": "http://gearheads.elementor.cloud/", "npOpr": 81.64, "quickStats": {"season": 2025, "number": 16460, "tot": {"value": 81.64274657642433, "rank": 1014}, "auto": {"value": 28.557676697927526, "rank": 845}, "dc": {"value": 53.085069878496824, "rank": 1313}, "eg": {"value": 6.5398841425383205, "rank": 5143}, "count": 8347}, "bestEventName": "N/A", "bestEventRank": 5, "bestEventWins": 5, "bestEventLosses": 1, "bestEventTies": 0, "bestEventAvgPoints": 165.5, "bestEventAvgAuto": 49.8, "bestEventAvgDC": 115.7, "eventsPlayed": 6}, {"number": 16481, "name": "Robo Racers", "school": "Family/Community", "sponsors": [], "city": "Dublin", "state": "CA", "country": "USA", "rookieYear": 2019, "website": "http://roboracers.org", "npOpr": 81.29, "quickStats": {"season": 2025, "number": 16481, "tot": {"value": 81.29038049152348, "rank": 1025}, "auto": {"value": 34.905542713271274, "rank": 442}, "dc": {"value": 73.10860149446971, "rank": 633}, "eg": {"value": 10.088408413870054, "rank": 1304}, "count": 8347}, "bestEventName": "N/A", "bestEventRank": 31, "bestEventWins": 3, "bestEventLosses": 7, "bestEventTies": 0, "bestEventAvgPoints": 179.3, "bestEventAvgAuto": 32.6, "bestEventAvgDC": 146.7, "eventsPlayed": 7}, {"number": 31799, "name": "The Regenesis Project", "school": "Family/Community", "sponsors": ["FIRST in Michigan", "Argosy Foundation", "Health Choice Home Care Service LLC", "AAA Bugg and Associates", "Yma Ymas", "Pandemonium (Clawson, MI)", "Get Hooked Sportfishing", "Autodesk", "J-Ro School of Music", "Aqua-tots Swim School (Troy, MI)", "Gear Up Grant by Armada Pi-Gears 14706", "Dupont", "McCourt's Music Group", "Wavde Family", "Lody Aldea", "Rueda Family", "Health Source Home Care", "Century 21 (Jocelyn Smiley)", "Real Estate One (Betsy Henry Vincenzetti)", "Purple & Pink ​Creative Prints & Crafts", "Other families and friends of The Regenesis Project 31799"], "city": "Troy", "state": "MI", "country": "USA", "rookieYear": 2025, "website": "https://theregenesisproject31799.weebly.com/", "npOpr": 80.99, "quickStats": {"season": 2025, "number": 31799, "tot": {"value": 80.99106638821453, "rank": 1037}, "auto": {"value": 21.0971716296082, "rank": 1488}, "dc": {"value": 59.89389475860634, "rank": 1012}, "eg": {"value": 8.692675553274984, "rank": 2470}, "count": 8347}, "bestEventName": "N/A", "bestEventRank": 17, "bestEventWins": 2, "bestEventLosses": 3, "bestEventTies": 0, "bestEventAvgPoints": 108.2, "bestEventAvgAuto": 30, "bestEventAvgDC": 78.2, "eventsPlayed": 7}, {"number": 10127, "name": "Tesla's Knights", "school": "Family Friends", "sponsors": [], "city": "North Kansas City", "state": "MO", "country": "USA", "rookieYear": 2015, "website": "http://www.teslasknights.com", "npOpr": 77.4, "quickStats": {"season": 2025, "number": 10127, "tot": {"value": 77.39563353176523, "rank": 1142}, "auto": {"value": 24.423878752258222, "rank": 1178}, "dc": {"value": 57.20828645660345, "rank": 1119}, "eg": {"value": 10.249205854188768, "rank": 1188}, "count": 8347}, "bestEventName": "N/A", "bestEventRank": 20, "bestEventWins": 3, "bestEventLosses": 3, "bestEventTies": 0, "bestEventAvgPoints": 136.3, "bestEventAvgAuto": 37.3, "bestEventAvgDC": 99, "eventsPlayed": 9}, {"number": 14988, "name": "Royal ρ-botics (Rho-botics)", "school": "Lake Ridge Academy", "sponsors": [], "city": "North Ridgeville", "state": "OH", "country": "USA", "rookieYear": 2018, "website": null, "npOpr": 75.95, "quickStats": {"season": 2025, "number": 14988, "tot": {"value": 75.94666402452293, "rank": 1197}, "auto": {"value": 31.38280802787089, "rank": 640}, "dc": {"value": 44.563855996652094, "rank": 1872}, "eg": {"value": 8.371251519238562, "rank": 2832}, "count": 8347}, "bestEventName": "N/A", "bestEventRank": 14, "bestEventWins": 3, "bestEventLosses": 2, "bestEventTies": 0, "bestEventAvgPoints": 142.4, "bestEventAvgAuto": 49.2, "bestEventAvgDC": 93.2, "eventsPlayed": 8}, {"number": 23834, "name": "Pine Knob Pilots", "school": "Clarkston Junior High School", "sponsors": ["Campbell's Collision", "Douglas Water Conditioning", "Reynold's Water Conditioning"], "city": "Clarkston", "state": "MI", "country": "USA", "rookieYear": 2023, "website": null, "npOpr": 72.27, "quickStats": {"season": 2025, "number": 23834, "tot": {"value": 72.27411282403179, "rank": 1320}, "auto": {"value": 26.571532474294553, "rank": 991}, "dc": {"value": 48.4403497800108, "rank": 1577}, "eg": {"value": 9.927089154588991, "rank": 1421}, "count": 8347}, "bestEventName": "N/A", "bestEventRank": 7, "bestEventWins": 5, "bestEventLosses": 2, "bestEventTies": 0, "bestEventAvgPoints": 140.4, "bestEventAvgAuto": 42.7, "bestEventAvgDC": 97.7, "eventsPlayed": 8}, {"number": 13312, "name": "The Bombers", "school": "John Burroughs School", "sponsors": [], "city": "Saint Louis", "state": "MO", "country": "USA", "rookieYear": 2017, "website": null, "npOpr": 66.32, "quickStats": {"season": 2025, "number": 13312, "tot": {"value": 66.32395420355502, "rank": 1524}, "auto": {"value": 23.660404030532042, "rank": 1238}, "dc": {"value": 42.66355017302293, "rank": 2043}, "eg": {"value": 8.389074707163449, "rank": 2810}, "count": 8347}, "bestEventName": "N/A", "bestEventRank": 7, "bestEventWins": 4, "bestEventLosses": 2, "bestEventTies": 0, "bestEventAvgPoints": 132.8, "bestEventAvgAuto": 42.3, "bestEventAvgDC": 90.5, "eventsPlayed": 7}, {"number": 25687, "name": "TechnoBolts", "school": "Family/Community", "sponsors": [], "city": "Fairfield", "state": "CT", "country": "USA", "rookieYear": 2024, "website": "https://technobolts.com/", "npOpr": 56.74, "quickStats": {"season": 2025, "number": 25687, "tot": {"value": 56.7398559502777, "rank": 2027}, "auto": {"value": 15.748188022259306, "rank": 2148}, "dc": {"value": 40.99166792801835, "rank": 2177}, "eg": {"value": 7.660617517697797, "rank": 3691}, "count": 8347}, "bestEventName": "N/A", "bestEventRank": 9, "bestEventWins": 3, "bestEventLosses": 2, "bestEventTies": 0, "bestEventAvgPoints": 111.4, "bestEventAvgAuto": 35, "bestEventAvgDC": 76.4, "eventsPlayed": 5}, {"number": 26858, "name": "Prairie Bytes", "school": "Terry School", "sponsors": ["Nextera Energy", "Gene Haas", "Gianforte Family Foundation", "Stockman Bank"], "city": "Terry", "state": "MT", "country": "USA", "rookieYear": 2024, "website": "http://prairie-bytes.org/", "npOpr": 55.73, "quickStats": {"season": 2025, "number": 26858, "tot": {"value": 55.7309546790713, "rank": 2086}, "auto": {"value": 22.254000834764568, "rank": 1354}, "dc": {"value": 49.00591574067427, "rank": 1536}, "eg": {"value": 9.66635619633375, "rank": 1608}, "count": 8347}, "bestEventName": "N/A", "bestEventRank": 6, "bestEventWins": 5, "bestEventLosses": 2, "bestEventTies": 0, "bestEventAvgPoints": 95.1, "bestEventAvgAuto": 32.1, "bestEventAvgDC": 63, "eventsPlayed": 4}, {"number": 22043, "name": "VIOHALCO TECHNOLOGIES FTC", "school": "MellonLab.org", "sponsors": ["VIOHALCO TECHNOLOGIES"], "city": "Piraeus", "state": "I", "country": "Greece", "rookieYear": 2022, "website": "https://mellonlab.org", "npOpr": 42.15, "quickStats": {"season": 2025, "number": 22043, "tot": {"value": 42.146601031439694, "rank": 3098}, "auto": {"value": 17.1481673645673, "rank": 1938}, "dc": {"value": 24.998433666872394, "rank": 4467}, "eg": {"value": 9.223563667039455, "rank": 1961}, "count": 8347}, "bestEventName": "N/A", "bestEventRank": 4, "bestEventWins": 4, "bestEventLosses": 1, "bestEventTies": 0, "bestEventAvgPoints": 77.2, "bestEventAvgAuto": 24.2, "bestEventAvgDC": 53, "eventsPlayed": 4}, {"number": 8581, "name": "Ædificatores", "school": "KSS Robotics", "sponsors": ["KSS Robotics"], "city": "Kent", "state": "OH", "country": "USA", "rookieYear": 2014, "website": "http://www.kssrobotics.org", "npOpr": 37.18, "quickStats": {"season": 2025, "number": 8581, "tot": {"value": 37.18215440974779, "rank": 3669}, "auto": {"value": 8.614837579138118, "rank": 4123}, "dc": {"value": 30.833785286730247, "rank": 3433}, "eg": {"value": 11.540198235575106, "rank": 603}, "count": 8347}, "bestEventName": "N/A", "bestEventRank": 4, "bestEventWins": 4, "bestEventLosses": 1, "bestEventTies": 0, "bestEventAvgPoints": 58.8, "bestEventAvgAuto": 10.8, "bestEventAvgDC": 48, "eventsPlayed": 9}, {"number": 33778, "name": "Mechanical Error", "school": "Applied Dynamics Initiative", "sponsors": ["Family", "Community"], "city": "Albuquerque", "state": "NM", "country": "USA", "rookieYear": 2025, "website": null, "npOpr": 32.89, "quickStats": {"season": 2025, "number": 33778, "tot": {"value": 32.8887661450772, "rank": 4243}, "auto": {"value": 12.783315951597464, "rank": 2805}, "dc": {"value": 20.105450193479744, "rank": 5407}, "eg": {"value": 5.094179659431262, "rank": 6704}, "count": 8347}, "bestEventName": "N/A", "bestEventRank": 8, "bestEventWins": 2, "bestEventLosses": 3, "bestEventTies": 0, "bestEventAvgPoints": 77.8, "bestEventAvgAuto": 22.6, "bestEventAvgDC": 55.2, "eventsPlayed": 4}, {"number": 11052, "name": "Project R", "school": "Pui Ching Middle School", "sponsors": [], "city": "Hong Kong", "state": "HK", "country": "China", "rookieYear": 2015, "website": null, "npOpr": 18.89, "quickStats": {"season": 2025, "number": 11052, "tot": {"value": 18.890043388115622, "rank": 6371}, "auto": {"value": 2.3921387308729707, "rank": 7130}, "dc": {"value": 16.497904657242653, "rank": 6167}, "eg": {"value": 5.009321686980684, "rank": 6768}, "count": 8347}, "bestEventName": "N/A", "bestEventRank": 10, "bestEventWins": 2, "bestEventLosses": 3, "bestEventTies": 0, "bestEventAvgPoints": 58.8, "bestEventAvgAuto": 10.8, "bestEventAvgDC": 48, "eventsPlayed": 3}];
+
+// ============================================
+// STATE
+// ============================================
+let allTeams = [...TEAMS_DATA];
+let displayTeams = [...TEAMS_DATA];
+let currentSort = { col: 'npOpr', dir: 'desc' };
+let compareMode = false;
+let compareSet = new Set();
+let maxOpr = Math.max(...TEAMS_DATA.map(t => t.npOpr));
+
+// ============================================
+// INIT
+// ============================================
+document.addEventListener('DOMContentLoaded', () => {
+    renderStats();
+    renderTable();
+    setupListeners();
+});
+
+function renderStats() {
+    animateCounter('statTeams', TEAMS_DATA.length);
+    
+    const oprs = TEAMS_DATA.map(t => t.npOpr).filter(v => v > 0);
+    const avg = oprs.reduce((a, b) => a + b, 0) / oprs.length;
+    const sorted = [...oprs].sort((a, b) => a - b);
+    const median = sorted.length % 2 === 0 
+        ? (sorted[sorted.length / 2 - 1] + sorted[sorted.length / 2]) / 2 
+        : sorted[Math.floor(sorted.length / 2)];
+    
+    animateCounter('statOprAvg', avg.toFixed(1));
+    animateCounter('statOprMax', Math.max(...oprs).toFixed(1));
+    animateCounter('statMedian', median.toFixed(1));
+}
+
+function animateCounter(id, target) {
+    const el = document.getElementById(id);
+    const isFloat = String(target).includes('.');
+    const numTarget = parseFloat(target);
+    const duration = 1200;
+    const start = performance.now();
+    
+    function tick(now) {
+        const elapsed = now - start;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const current = numTarget * eased;
+        el.textContent = isFloat ? current.toFixed(1) : Math.round(current);
+        if (progress < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+}
+
+// ============================================
+// TABLE RENDERING
+// ============================================
+function renderTable() {
+    const tbody = document.getElementById('tableBody');
+    
+    if (displayTeams.length === 0) {
+        tbody.innerHTML = `
+            <tr><td colspan="13">
+                <div class="empty-state">
+                    <div class="icon">🔍</div>
+                    <div class="title">No teams match your filters</div>
+                    <div>Try adjusting your search or OPR range</div>
+                </div>
+            </td></tr>`;
+        document.getElementById('showCount').textContent = '0';
+        return;
+    }
+
+    let html = '';
+    displayTeams.forEach((t, i) => {
+        const loc = t.city ? `${t.city}, ${t.state}` : t.country;
+        const barWidth = maxOpr > 0 ? (t.npOpr / maxOpr * 100) : 0;
+        const rankClass = i < 3 ? `rank-${i + 1}` : '';
+        const rankCellClass = i < 3 ? 'top-3' : '';
+        const record = `${t.bestEventWins || 0}-${t.bestEventLosses || 0}-${t.bestEventTies || 0}`;
+        const checked = compareSet.has(t.number);
+
+        html += `
+        <tr class="${rankClass}" onclick="handleRowClick(event, ${t.number})" data-num="${t.number}">
+            <td class="cell-rank ${rankCellClass}">${i + 1}</td>
+            <td class="cell-team-num">${t.number}</td>
+            <td class="cell-team-name">${escHtml(t.name)}</td>
+            <td class="cell-location" title="${escHtml(loc)}">${escHtml(loc)}</td>
+            <td class="cell-stat opr">${t.npOpr.toFixed(1)}</td>
+            <td class="cell-bar"><div class="opr-bar"><div class="opr-bar-fill" style="width:${barWidth}%"></div></div></td>
+            <td class="cell-stat">${t.bestEventAvgPoints || 0}</td>
+            <td class="cell-stat auto">${t.bestEventAvgAuto || 0}</td>
+            <td class="cell-stat dc">${t.bestEventAvgDC || 0}</td>
+            <td class="cell-stat record">${record}</td>
+            <td class="cell-stat rank">${t.bestEventRank || '—'}</td>
+            <td class="cell-stat">${t.eventsPlayed || 0}</td>
+            <td>
+                <input type="checkbox" ${checked ? 'checked' : ''} 
+                    onclick="event.stopPropagation(); toggleCompare(${t.number})"
+                    style="accent-color:var(--accent-1);cursor:pointer"
+                    data-tooltip="Add to compare">
+            </td>
+        </tr>`;
+    });
+
+    tbody.innerHTML = html;
+    document.getElementById('showCount').textContent = displayTeams.length;
+    document.getElementById('totalCount').textContent = TEAMS_DATA.length;
+}
+
+// ============================================
+// SORTING
+// ============================================
+function sortCol(col) {
+    // Update direction
+    if (currentSort.col === col) {
+        currentSort.dir = currentSort.dir === 'desc' ? 'asc' : 'desc';
+    } else {
+        currentSort.col = col;
+        currentSort.dir = 'desc';
+    }
+
+    // Update header UI
+    document.querySelectorAll('.data-table th').forEach(th => {
+        th.classList.remove('sorted', 'asc', 'desc');
+        if (th.dataset.col === col) {
+            th.classList.add('sorted', currentSort.dir);
+        }
+    });
+
+    // Update filter buttons
+    document.querySelectorAll('#sortGroup .filter-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.sort === col);
+    });
+
+    applySort();
+    renderTable();
+}
+
+function applySort() {
+    const { col, dir } = currentSort;
+    const mul = dir === 'asc' ? 1 : -1;
+
+    displayTeams.sort((a, b) => {
+        let aVal, bVal;
+        switch (col) {
+            case 'rank':
+            case 'npOpr': aVal = a.npOpr; bVal = b.npOpr; break;
+            case 'name': aVal = a.name.toLowerCase(); bVal = b.name.toLowerCase();
+                return mul * aVal.localeCompare(bVal);
+            case 'number': aVal = a.number; bVal = b.number; break;
+            case 'location': 
+                aVal = (a.city + a.state).toLowerCase(); 
+                bVal = (b.city + b.state).toLowerCase();
+                return mul * aVal.localeCompare(bVal);
+            case 'bestEventAvgPoints': aVal = a.bestEventAvgPoints || 0; bVal = b.bestEventAvgPoints || 0; break;
+            case 'bestEventAvgAuto': aVal = a.bestEventAvgAuto || 0; bVal = b.bestEventAvgAuto || 0; break;
+            case 'bestEventAvgDC': aVal = a.bestEventAvgDC || 0; bVal = b.bestEventAvgDC || 0; break;
+            case 'record':
+                aVal = (a.bestEventWins || 0) * 100 + (a.bestEventTies || 0) * 10 - (a.bestEventLosses || 0);
+                bVal = (b.bestEventWins || 0) * 100 + (b.bestEventTies || 0) * 10 - (b.bestEventLosses || 0);
+                break;
+            case 'bestEventRank': aVal = a.bestEventRank || 9999; bVal = b.bestEventRank || 9999; break;
+            case 'eventsPlayed': aVal = a.eventsPlayed || 0; bVal = b.eventsPlayed || 0; break;
+            case 'rookieYear': aVal = a.rookieYear || 9999; bVal = b.rookieYear || 9999; break;
+            default: aVal = a.npOpr; bVal = b.npOpr;
+        }
+        return mul * (aVal - bVal);
+    });
+}
+
+// ============================================
+// SEARCH & FILTERS
+// ============================================
+function applyFilters() {
+    const query = document.getElementById('searchInput').value.toLowerCase();
+    const minOpr = parseFloat(document.getElementById('oprSlider').value);
+
+    displayTeams = allTeams.filter(t => {
+        // Search
+        if (query) {
+            const haystack = `${t.number} ${t.name} ${t.city} ${t.state} ${t.country} ${t.school}`.toLowerCase();
+            if (!haystack.includes(query)) return false;
+        }
+        // OPR filter
+        if (t.npOpr < minOpr) return false;
+        return true;
+    });
+
+    applySort();
+    renderTable();
+}
+
+function setupListeners() {
+    // Search
+    document.getElementById('searchInput').addEventListener('input', applyFilters);
+
+    // OPR slider
+    const slider = document.getElementById('oprSlider');
+    const sliderVal = document.getElementById('oprSliderVal');
+    slider.addEventListener('input', () => {
+        sliderVal.textContent = slider.value;
+        applyFilters();
+    });
+
+    // Sort buttons
+    document.querySelectorAll('#sortGroup .filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => sortCol(btn.dataset.sort));
+    });
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', e => {
+        if (e.key === '/' && !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
+            e.preventDefault();
+            document.getElementById('searchInput').focus();
+        }
+        if (e.key === 'Escape') {
+            closeModal('detailModal');
+            closeModal('compareModal');
+        }
+    });
+
+    // Click outside modal to close
+    ['detailModal', 'compareModal'].forEach(id => {
+        document.getElementById(id).addEventListener('click', e => {
+            if (e.target === e.currentTarget) closeModal(id);
+        });
+    });
+}
+
+// ============================================
+// TEAM DETAIL MODAL
+// ============================================
+function handleRowClick(e, num) {
+    if (e.target.type === 'checkbox') return;
+    openTeamDetail(num);
+}
+
+function openTeamDetail(num) {
+    const t = TEAMS_DATA.find(x => x.number === num);
+    if (!t) return;
+
+    document.getElementById('modalNum').textContent = `TEAM ${t.number}`;
+    document.getElementById('modalName').textContent = t.name;
+    
+    const loc = [t.city, t.state, t.country].filter(Boolean).join(', ');
+    document.getElementById('modalLoc').textContent = loc;
+
+    const qs = t.quickStats;
+    const body = document.getElementById('modalBody');
+
+    // Build radar data for canvas
+    const radarHtml = `<div class="radar-container"><canvas id="radarCanvas" width="300" height="300"></canvas></div>`;
+
+    body.innerHTML = `
+        <div class="modal-section">
+            <div class="modal-section-title">Performance Overview</div>
+            <div class="modal-stats-grid">
+                <div class="modal-stat">
+                    <div class="label">npOPR</div>
+                    <div class="value c1">${t.npOpr.toFixed(1)}</div>
+                </div>
+                <div class="modal-stat">
+                    <div class="label">Avg Points</div>
+                    <div class="value c3">${t.bestEventAvgPoints || 0}</div>
+                </div>
+                <div class="modal-stat">
+                    <div class="label">Avg Auto</div>
+                    <div class="value c2">${t.bestEventAvgAuto || 0}</div>
+                </div>
+                <div class="modal-stat">
+                    <div class="label">Avg DC</div>
+                    <div class="value c6">${t.bestEventAvgDC || 0}</div>
+                </div>
+                <div class="modal-stat">
+                    <div class="label">Best Record</div>
+                    <div class="value c4">${t.bestEventWins||0}-${t.bestEventLosses||0}-${t.bestEventTies||0}</div>
+                </div>
+                <div class="modal-stat">
+                    <div class="label">Best Event Rank</div>
+                    <div class="value c4">${t.bestEventRank || '—'}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-section">
+            <div class="modal-section-title">Skill Radar</div>
+            ${radarHtml}
+        </div>
+
+        ${qs ? `
+        <div class="modal-section">
+            <div class="modal-section-title">Global Rankings (out of ${(qs.count||0).toLocaleString()} teams)</div>
+            <div class="modal-stats-grid">
+                <div class="modal-stat">
+                    <div class="label">Total OPR Rank</div>
+                    <div class="value c1">#${qs.tot?.rank || '—'}</div>
+                </div>
+                <div class="modal-stat">
+                    <div class="label">Auto Rank</div>
+                    <div class="value c3">#${qs.auto?.rank || '—'}</div>
+                </div>
+                <div class="modal-stat">
+                    <div class="label">DC Rank</div>
+                    <div class="value c6">#${qs.dc?.rank || '—'}</div>
+                </div>
+                <div class="modal-stat">
+                    <div class="label">Endgame Rank</div>
+                    <div class="value c4">#${qs.eg?.rank || '—'}</div>
+                </div>
+            </div>
+        </div>
+        ` : ''}
+
+        ${t.school ? `
+        <div class="modal-section">
+            <div class="modal-section-title">Affiliation</div>
+            <p style="color:var(--text-300)">${escHtml(t.school)}</p>
+        </div>
+        ` : ''}
+
+        ${t.sponsors && t.sponsors.length ? `
+        <div class="modal-section">
+            <div class="modal-section-title">Sponsors</div>
+            <div class="sponsor-tags">
+                ${t.sponsors.map(s => `<span class="sponsor-tag">${escHtml(s)}</span>`).join('')}
+            </div>
+        </div>
+        ` : ''}
+
+        <div class="modal-section">
+            <a class="modal-link" href="https://ftcscout.org/teams/${t.number}" target="_blank">
+                View Full Profile on FTCScout ↗
+            </a>
+        </div>
+    `;
+
+    openModal('detailModal');
+
+    // Draw radar chart after modal is visible
+    setTimeout(() => drawRadar(t), 100);
+}
+
+function drawRadar(team) {
+    const canvas = document.getElementById('radarCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const dpr = window.devicePixelRatio || 1;
+    const size = 300;
+    canvas.width = size * dpr;
+    canvas.height = size * dpr;
+    canvas.style.width = size + 'px';
+    canvas.style.height = size + 'px';
+    ctx.scale(dpr, dpr);
+
+    const cx = size / 2, cy = size / 2, r = 110;
+    const labels = ['Auto', 'DC', 'Endgame', 'Record', 'OPR'];
+    
+    // Normalize values (0-1)
+    const vals = [
+        Math.min((team.bestEventAvgAuto || 0) / 60, 1),
+        Math.min((team.bestEventAvgDC || 0) / 120, 1),
+        Math.min(team.npOpr / maxOpr, 1),
+        Math.min(((team.bestEventWins || 0) * 2 + (team.bestEventTies || 0)) / 14, 1),
+        Math.min(team.npOpr / maxOpr, 1)
+    ];
+
+    const n = labels.length;
+    const angleStep = (Math.PI * 2) / n;
+
+    // Draw grid
+    ctx.strokeStyle = 'rgba(0, 0, 0, 0.08)';
+    ctx.lineWidth = 1;
+    for (let ring = 1; ring <= 4; ring++) {
+        const rr = (r / 4) * ring;
+        ctx.beginPath();
+        for (let i = 0; i <= n; i++) {
+            const angle = i * angleStep - Math.PI / 2;
+            const x = cx + rr * Math.cos(angle);
+            const y = cy + rr * Math.sin(angle);
+            i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+    }
+
+    // Draw axes
+    ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
+    for (let i = 0; i < n; i++) {
+        const angle = i * angleStep - Math.PI / 2;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + r * Math.cos(angle), cy + r * Math.sin(angle));
+        ctx.stroke();
+    }
+
+    // Draw data polygon
+    ctx.beginPath();
+    for (let i = 0; i <= n; i++) {
+        const idx = i % n;
+        const angle = idx * angleStep - Math.PI / 2;
+        const x = cx + r * vals[idx] * Math.cos(angle);
+        const y = cy + r * vals[idx] * Math.sin(angle);
+        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+
+    // Fill
+    const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+    grad.addColorStop(0, 'rgba(220, 38, 38, 0.3)');
+    grad.addColorStop(1, 'rgba(6, 182, 212, 0.1)');
+    ctx.fillStyle = grad;
+    ctx.fill();
+
+    // Stroke
+    ctx.strokeStyle = 'rgba(220, 38, 38, 0.8)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Draw data points
+    for (let i = 0; i < n; i++) {
+        const angle = i * angleStep - Math.PI / 2;
+        const x = cx + r * vals[i] * Math.cos(angle);
+        const y = cy + r * vals[i] * Math.sin(angle);
+        ctx.beginPath();
+        ctx.arc(x, y, 4, 0, Math.PI * 2);
+        ctx.fillStyle = '#dc2626';
+        ctx.fill();
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+    }
+
+    // Labels
+    ctx.fillStyle = '#666';
+    ctx.font = '12px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    for (let i = 0; i < n; i++) {
+        const angle = i * angleStep - Math.PI / 2;
+        const lx = cx + (r + 24) * Math.cos(angle);
+        const ly = cy + (r + 24) * Math.sin(angle);
+        ctx.fillText(labels[i], lx, ly + 4);
+    }
+}
+
+// ============================================
+// COMPARE MODE
+// ============================================
+function toggleCompareMode() {
+    compareMode = !compareMode;
+    document.getElementById('compareToggle').textContent = compareMode ? '☑ Compare Mode ON' : '☐ Compare';
+    document.getElementById('compareToggle').classList.toggle('active', compareMode);
+    if (!compareMode) {
+        compareSet.clear();
+        updateCompareBar();
+        renderTable();
+    }
+}
+
+function toggleCompare(num) {
+    if (compareSet.has(num)) {
+        compareSet.delete(num);
+    } else {
+        if (compareSet.size >= 4) {
+            alert('Maximum 4 teams for comparison');
+            return;
+        }
+        compareSet.add(num);
+    }
+    updateCompareBar();
+    renderTable();
+}
+
+function updateCompareBar() {
+    const bar = document.getElementById('compareBar');
+    const chips = document.getElementById('compareChips');
+    
+    if (compareSet.size === 0) {
+        bar.classList.remove('visible');
+        return;
+    }
+
+    bar.classList.add('visible');
+    chips.innerHTML = [...compareSet].map(num => {
+        const t = TEAMS_DATA.find(x => x.number === num);
+        return `<div class="compare-chip">
+            <span style="color:var(--accent-2);font-family:'JetBrains Mono'">${num}</span>
+            ${t ? t.name : ''}
+            <button class="remove" onclick="toggleCompare(${num})">✕</button>
+        </div>`;
+    }).join('');
+}
+
+function clearCompare() {
+    compareSet.clear();
+    updateCompareBar();
+    renderTable();
+}
+
+function openCompareModal() {
+    if (compareSet.size < 2) {
+        alert('Select at least 2 teams to compare');
+        return;
+    }
+
+    const teams = [...compareSet].map(n => TEAMS_DATA.find(t => t.number === n)).filter(Boolean);
+    const metrics = [
+        { label: 'npOPR', key: 'npOpr', fmt: v => v.toFixed(1), higher: true },
+        { label: 'Avg Points', key: 'bestEventAvgPoints', fmt: v => v || 0, higher: true },
+        { label: 'Avg Auto', key: 'bestEventAvgAuto', fmt: v => v || 0, higher: true },
+        { label: 'Avg DC', key: 'bestEventAvgDC', fmt: v => v || 0, higher: true },
+        { label: 'Wins', key: 'bestEventWins', fmt: v => v || 0, higher: true },
+        { label: 'Best Rank', key: 'bestEventRank', fmt: v => v || '—', higher: false },
+        { label: 'Events Played', key: 'eventsPlayed', fmt: v => v || 0, higher: true },
+        { label: 'Rookie Year', key: 'rookieYear', fmt: v => v || '—', higher: false },
+    ];
+
+    let html = `<table class="compare-table">
+        <thead><tr>
+            <th>Metric</th>
+            ${teams.map(t => `<th style="color:var(--accent-2)">${t.number}<br><span style="font-weight:400;color:var(--text-300);font-size:0.7rem">${escHtml(t.name)}</span></th>`).join('')}
+        </tr></thead><tbody>`;
+
+    metrics.forEach(m => {
+        const vals = teams.map(t => {
+            const raw = t[m.key];
+            return { val: raw, num: typeof raw === 'number' ? raw : -Infinity };
+        });
+        const bestNum = m.higher ? Math.max(...vals.map(v => v.num)) : Math.min(...vals.filter(v => v.num !== -Infinity).map(v => v.num));
+
+        html += `<tr><td>${m.label}</td>`;
+        vals.forEach(v => {
+            const isWinner = v.num === bestNum && vals.filter(x => x.num === bestNum).length === 1;
+            html += `<td class="${isWinner ? 'winner' : ''}">${m.fmt(v.val)}</td>`;
+        });
+        html += `</tr>`;
+    });
+
+    html += '</tbody></table>';
+    document.getElementById('compareBody').innerHTML = html;
+    openModal('compareModal');
+}
+
+// ============================================
+// MODALS
+// ============================================
+function openModal(id) {
+    document.getElementById(id).classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeModal(id) {
+    document.getElementById(id).classList.remove('open');
+    document.body.style.overflow = '';
+}
+
+// ============================================
+// EXPORT
+// ============================================
+function exportCSV() {
+    const headers = ['#', 'Team', 'Name', 'Location', 'npOPR', 'Avg Pts', 'Avg Auto', 'Avg DC', 'W-L-T', 'Best Rank', 'Events'];
+    const rows = displayTeams.map((t, i) => [
+        i + 1,
+        t.number,
+        `"${t.name}"`,
+        `"${[t.city, t.state, t.country].filter(Boolean).join(', ')}"`,
+        t.npOpr.toFixed(1),
+        t.bestEventAvgPoints || 0,
+        t.bestEventAvgAuto || 0,
+        t.bestEventAvgDC || 0,
+        `${t.bestEventWins||0}-${t.bestEventLosses||0}-${t.bestEventTies||0}`,
+        t.bestEventRank || '',
+        t.eventsPlayed || 0
+    ]);
+
+    const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `cri_2025_scouting_${new Date().toISOString().slice(0,10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+// ============================================
+// UTILS
+// ============================================
+function escHtml(s) {
+    if (!s) return '';
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+</script>
+</body>
+</html>
